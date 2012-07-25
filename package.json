@@ -1,0 +1,17 @@
+{
+  "name": "seraph_model_express",
+  "version": "0.0.0",
+  "description": "expose crud functions for a seraph model over http",
+  "main": "lib/expose.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/brikteknologier/seraph_model_express.git"
+  },
+  "license": "BSD"
+}
