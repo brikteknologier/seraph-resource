@@ -1,4 +1,4 @@
-seraph_model_express
+seraph-resource
 ====================
 
 expose crud functions for a seraph model over http
@@ -48,7 +48,7 @@ OK
 ```
 
 # usage
-### seraph_model_express(expressInstance, seraphModel, [options])
+### seraph_resource(expressInstance, seraphModel, [options])
 
 Takes an instance of express and adds the crud routes given a seraph model.
 
