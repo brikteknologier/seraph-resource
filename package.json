@@ -1,8 +1,8 @@
 {
-  "name": "seraph_model_express",
+  "name": "seraph-resource",
   "version": "0.1.0",
   "description": "expose crud functions for a seraph model over http",
-  "main": "lib/expose.js",
+  "main": "lib/resource.js",
   "directories": {
     "test": "test"
   },
@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/brikteknologier/seraph_model_express.git"
+    "url": "git://github.com/brikteknologier/seraph-resource.git"
   },
   "license": "BSD",
   "dependencies": {
