@@ -10,7 +10,7 @@ expose crud functions for a seraph model over http
 ```javascript
 var db = require('seraph')('http://localhost:7474');
 var User = require('seraph_model')(db, 'user');
-var expose = require('seraph_model_express');
+var expose = require('seraph-resource');
 
 var express = require('express');
 var app = express();
