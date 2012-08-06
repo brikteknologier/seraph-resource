@@ -1,7 +1,9 @@
 seraph-resource
 ====================
 
-expose crud functions for a seraph model over http
+creates a [controller](http://github.com/brikteknologier/controller) with crud
+methods for a [seraph](http://github.com/brikteknologier/seraph)
+[model](http://github.com/brikteknologier/seraph-model).
 
 # example
 
@@ -9,7 +11,7 @@ expose crud functions for a seraph model over http
 
 ```javascript
 var db = require('seraph')('http://localhost:7474');
-var User = require('seraph_model')(db, 'user');
+var User = require('seraph-model')(db, 'user');
 var expose = require('seraph-resource');
 
 var express = require('express');
