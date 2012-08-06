@@ -13,8 +13,8 @@ describe('Seraph Model HTTP Methods', function() {
     user = model(mock, 'user');
     app = express();
     app.use(express.bodyParser());
-    expose(app, beer, {root: '/brews/'});
-    expose(app, user);
+    expose(beer, {root: '/brews/'}).attach(app);
+    expose(user).attach(app);
   });
 
   it('should save a model', function(done) {
