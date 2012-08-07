@@ -10,6 +10,7 @@ describe('Seraph Model HTTP Methods', function() {
   beforeEach(function() {
     mock = new SeraphMock();
     beer = model(mock, 'beer');
+    beer.fields = ['name', 'fields', 'ibus', 'hops', 'brewery'];
     user = model(mock, 'user');
     app = express();
     app.use(express.bodyParser());
@@ -149,5 +150,18 @@ describe('Seraph Model HTTP Methods', function() {
               .end(done);
           })
       });
+  });
+
+  it('should be able to access defined properties', function(done) {
+    request(app)
+      .post('/brews/beer')
+      .send({ name: 'Linneaus IPA', brewery: 'Monadic Ale', ibus: 65 })
+      .end(function(err, res) {
+        request(app, err)
+          .get('/brews/beer/' + res.body.id + '/brewery')
+          .expect(200)
+          .expect("Monadic Ale")
+          .end(done)
+      })
   });
 })

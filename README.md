@@ -12,7 +12,7 @@ methods for a [seraph](http://github.com/brikteknologier/seraph)
 ```javascript
 var db = require('seraph')('http://localhost:7474');
 var User = require('seraph-model')(db, 'user');
-var expose = require('seraph-resource');
+var resource = require('seraph-resource');
 
 var express = require('express');
 var app = express();
