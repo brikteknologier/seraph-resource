@@ -3,6 +3,7 @@ var _ = require('underscore');
 function SeraphMock() {
   var db = [];
   var idx = {};
+  this.options = {id:'id'}
   this.save = function(obj, cb) {
     if (obj.id != null) {
       db[obj.id] = obj;

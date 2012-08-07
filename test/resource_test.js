@@ -13,7 +13,7 @@ describe('Seraph Model HTTP Methods', function() {
     beer.fields = ['name', 'fields', 'ibus', 'hops', 'brewery'];
     user = model(mock, 'user');
     app = express();
-    app.use(express.bodyParser());
+    app.use(express.bodyParser({strict:false}));
     expose(beer, {root: '/brews/'}).attach(app);
     expose(user).attach(app);
   });
@@ -174,6 +174,39 @@ describe('Seraph Model HTTP Methods', function() {
           .get('/brews/beer/' + res.body.id + '/hops')
           .expect(404)
           .end(done)
+      })
+  });
+
+  it('should be able to create properties', function(done) {
+    request(app)
+      .post('/brews/beer')
+      .send({ name: 'Linneaus IPA', brewery: 'Monadic Ale', ibus: 65 })
+      .end(function(err, res) {
+        request(app, err)
+          .post('/brews/beer/' + res.body.id + '/hops')
+          .type("json")
+          .send('Simcoe, Cascade')         
+          .expect(200)
+          .expect({ 
+            name: 'Linneaus IPA', 
+            brewery: 'Monadic Ale', 
+            ibus: 65,
+            hops: "Simcoe, Cascade",
+            id: 0
+          })
+          .end(function(err) {
+            assert(!err,err);
+            request(app, err)
+              .get('/brews/beer/' + res.body.id)
+              .expect({ 
+                name: 'Linneaus IPA', 
+                brewery: 'Monadic Ale', 
+                ibus: 65,
+                hops: "Simcoe, Cascade" ,
+                id: 0
+              })
+              .end(done)
+          })
       })
   });
 })
