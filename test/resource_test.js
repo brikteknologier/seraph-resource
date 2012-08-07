@@ -146,7 +146,7 @@ describe('Seraph Model HTTP Methods', function() {
             assert.ok(!err, err);
             request(app)
               .get('/user/' + res.body.id)
-              .expect(500)
+              .expect(404)
               .end(done);
           })
       });
@@ -160,7 +160,19 @@ describe('Seraph Model HTTP Methods', function() {
         request(app, err)
           .get('/brews/beer/' + res.body.id + '/brewery')
           .expect(200)
-          .expect("Monadic Ale")
+          .expect('"Monadic Ale"')
+          .end(done)
+      })
+  });
+
+  it('should be give 404 for expected but unset props', function(done) {
+    request(app)
+      .post('/brews/beer')
+      .send({ name: 'Linneaus IPA', brewery: 'Monadic Ale', ibus: 65 })
+      .end(function(err, res) {
+        request(app, err)
+          .get('/brews/beer/' + res.body.id + '/hops')
+          .expect(404)
           .end(done)
       })
   });
