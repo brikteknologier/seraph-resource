@@ -5,6 +5,17 @@ creates a [controller](http://github.com/brikteknologier/controller) with crud
 methods for a [seraph](http://github.com/brikteknologier/seraph)
 [model](http://github.com/brikteknologier/seraph-model).
 
+# why?
+
+[seraph](http://github.com/brikteknologier/seraph) gives us access to a neo4j 
+db. [seraph-model](http://github.com/brikteknologier/seraph-model) gives us
+models for this db. __seraph-resource__ gives us a base controller for these
+models. 
+
+# install
+
+`npm install seraph-resource`
+
 # example
 
 ## setup
