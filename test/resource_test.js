@@ -186,7 +186,7 @@ describe('Seraph Model HTTP Methods', function() {
           .post('/brews/beer/' + res.body.id + '/hops')
           .type("json")
           .send('Simcoe, Cascade')         
-          .expect(200)
+          .expect(201)
           .expect({ 
             name: 'Linneaus IPA', 
             brewery: 'Monadic Ale', 
@@ -198,11 +198,72 @@ describe('Seraph Model HTTP Methods', function() {
             assert(!err,err);
             request(app, err)
               .get('/brews/beer/' + res.body.id)
+              .expect(200)
               .expect({ 
                 name: 'Linneaus IPA', 
                 brewery: 'Monadic Ale', 
                 ibus: 65,
                 hops: "Simcoe, Cascade" ,
+                id: 0
+              })
+              .end(done)
+          })
+      })
+  });
+
+  it('should be able to update properties', function(done) {
+    request(app)
+      .post('/brews/beer')
+      .send({ name: 'Linneaus IPA', brewery: 'Monadic Ale', ibus: 65 })
+      .end(function(err, res) {
+        request(app, err)
+          .put('/brews/beer/' + res.body.id + '/ibus')
+          .type("json")
+          .send(87)         
+          .expect(200)
+          .expect({ 
+            name: 'Linneaus IPA', 
+            brewery: 'Monadic Ale', 
+            ibus: 87,
+            id: 0
+          })
+          .end(function(err) {
+            assert(!err,err);
+            request(app, err)
+              .get('/brews/beer/' + res.body.id)
+              .expect(200)
+              .expect({ 
+                name: 'Linneaus IPA', 
+                brewery: 'Monadic Ale', 
+                ibus: 87,
+                id: 0
+              })
+              .end(done)
+          })
+      })
+  });
+
+  it('should be able to delete properties', function(done) {
+    request(app)
+      .post('/brews/beer')
+      .send({ name: 'Linneaus IPA', brewery: 'Monadic Ale', ibus: 65 })
+      .end(function(err, res) {
+        request(app, err)
+          .del('/brews/beer/' + res.body.id + '/ibus') 
+          .expect(200)
+          .expect({ 
+            name: 'Linneaus IPA', 
+            brewery: 'Monadic Ale', 
+            id: 0
+          })
+          .end(function(err) {
+            assert(!err,err);
+            request(app, err)
+              .get('/brews/beer/' + res.body.id)
+              .expect(200)
+              .expect({ 
+                name: 'Linneaus IPA', 
+                brewery: 'Monadic Ale',
                 id: 0
               })
               .end(done)
