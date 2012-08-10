@@ -13,9 +13,8 @@ describe('Seraph Model HTTP Methods', function() {
     beer.fields = ['name', 'fields', 'ibus', 'hops', 'brewery'];
     user = model(mock, 'user');
     app = express();
-    app.use(express.bodyParser({strict:false}));
-    expose(beer, {root: '/brews/'}).attach(app);
-    expose(user).attach(app);
+    app.use('/brews/', expose(beer))
+    app.use(expose(user))
   });
 
   it('should save a model', function(done) {
