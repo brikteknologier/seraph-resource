@@ -109,6 +109,17 @@ DELETE /model/:model/field -> 'delete:field'
 \*\**note - params are prefixed with an underscore to prevent conflict with
 model types*
 
+## middleware groups
+
+Resource groups each of the actions into middleware groups to make it easier
+for you to apply targeted middleware for actions. For more information on how
+the groups work, see the [docs in controller](https://github.com/brikteknologier/controller#groups).
+
+* `'accessors'` actions that will return some data from the database
+* `'mutators'` actions that will change some data in the database
+* `'relationships'` actions that will work with relationships
+* `'properties'` actions that will work with individual properties
+
 ## express param
 
 Each resource has a `param` property which can be used to resolve instances of
