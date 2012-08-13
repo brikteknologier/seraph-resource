@@ -23,6 +23,7 @@
     "mocha": "*",
     "supertest": "*",
     "express": "*",
-    "seraph_model": "*"
+    "seraph_model": "*",
+    "async": "*"
   }
 }

@@ -4,6 +4,7 @@ var SeraphMock = require('./seraph_mock');
 var model = require('seraph_model');
 var expose = require('../');
 var assert = require('assert');
+var async = require('async');
 
 describe('Seraph Model HTTP Methods', function() {
   var mock, beer, user, app;
@@ -269,4 +270,153 @@ describe('Seraph Model HTTP Methods', function() {
           })
       })
   });
+
+  it('should be able to create a relationship', function(done) {
+    request(app)
+      .post('/brews/beer')
+      .send({ name: 'Pliny the Elder' })
+      .end(function(err, res) {
+        request(app)
+          .post('/brews/beer/' + res.body.id + '/rel/someType/10')
+          .send({key: 'value'})
+          .expect(200)
+          .expect({
+            from: 0, to: 10, id: 0, 
+            type:'someType',
+            properties: { key: 'value' }
+          }).end(done);
+      });
+  })
+  it('should be able to create a relationship with no props', function(done) {
+    request(app)
+      .post('/brews/beer')
+      .send({ name: 'Pliny the Elder' })
+      .end(function(err, res) {
+        request(app)
+          .post('/brews/beer/' + res.body.id + '/rel/someType/10')
+          .expect(200)
+          .expect({
+            from: 0, to: 10, id: 0, 
+            type:'someType',
+            properties: {}
+          }).end(done);
+      });
+  })
+
+  it('should retrieve a relationship', function(done) {
+    request(app)
+      .post('/brews/beer')
+      .send({ name: 'Pliny the Elder' })
+      .end(function(err, res) {
+        request(app)
+          .post('/brews/beer/' + res.body.id + '/rel/someType/10')
+          .end(function(err, res) {
+            request(app)
+              .get('/brews/beer/0/rel/someType/out')
+              .expect(200)
+              .expect([{
+                from: 0, to: 10, id: 0, 
+                type:'someType',
+                properties: {}
+              }]).end(done);
+          });
+      });
+  })
+
+  it('should retrieve all relevant relationships', function(done) {
+    request(app)
+      .post('/brews/beer')
+      .send({ name: 'Pliny the Elder' })
+      .end(function(err, res) {
+        var r0 = request(app)
+          .post('/brews/beer/' + res.body.id + '/rel/someType/10');
+        var r1 = request(app)
+          .post('/brews/beer/10/rel/someType/0');
+        var r2 = request(app)
+          .post('/brews/beer/' + res.body.id + '/rel/other/10');
+        var r3 = request(app)
+          .post('/brews/beer/5/rel/someType/6');
+        async.series([
+          r0.end.bind(r0),
+          r1.end.bind(r1),
+          r2.end.bind(r2),
+          r3.end.bind(r3)
+        ], function(err, res) {
+          request(app)
+            .get('/brews/beer/0/rel/someType')
+            .expect(200)
+            .expect([{
+              from: 0, to: 10, id: 0, 
+              type:'someType',
+              properties: {}
+            }, {
+              from: 10, to: 0, id: 1,
+              type: 'someType',
+              properties: {}
+            }]).end(done);
+        })
+      });
+  })
+
+  it('should retrieve all relevant incoming relationships', function(done) {
+    request(app)
+      .post('/brews/beer')
+      .send({ name: 'Pliny the Elder' })
+      .end(function(err, res) {
+        var r0 = request(app)
+          .post('/brews/beer/' + res.body.id + '/rel/someType/10');
+        var r1 = request(app)
+          .post('/brews/beer/10/rel/someType/0');
+        var r2 = request(app)
+          .post('/brews/beer/' + res.body.id + '/rel/other/10');
+        var r3 = request(app)
+          .post('/brews/beer/5/rel/someType/6');
+        async.series([
+          r0.end.bind(r0),
+          r1.end.bind(r1),
+          r2.end.bind(r2),
+          r3.end.bind(r3)
+        ], function(err, res) {
+          request(app)
+            .get('/brews/beer/0/rel/someType/in')
+            .expect(200)
+            .expect([{
+              from: 10, to: 0, id: 1,
+              type: 'someType',
+              properties: {}
+            }]).end(done);
+        })
+      });
+  })
+
+  it('should retrieve all relevant outgoing relationships', function(done) {
+    request(app)
+      .post('/brews/beer')
+      .send({ name: 'Pliny the Elder' })
+      .end(function(err, res) {
+        var r0 = request(app)
+          .post('/brews/beer/' + res.body.id + '/rel/someType/10');
+        var r1 = request(app)
+          .post('/brews/beer/10/rel/someType/0');
+        var r2 = request(app)
+          .post('/brews/beer/' + res.body.id + '/rel/other/10');
+        var r3 = request(app)
+          .post('/brews/beer/5/rel/someType/6');
+        async.series([
+          r0.end.bind(r0),
+          r1.end.bind(r1),
+          r2.end.bind(r2),
+          r3.end.bind(r3)
+        ], function(err, res) {
+          request(app)
+            .get('/brews/beer/0/rel/someType/out')
+            .expect(200)
+            .expect([{
+              from: 0, to: 10, id: 0, 
+              type:'someType',
+              properties: {}
+            }]).end(done);
+        })
+      });
+  })
 })
