@@ -419,4 +419,11 @@ describe('Seraph Model HTTP Methods', function() {
         })
       });
   })
+
+  it('should not call res.end incorrectly', function(done) {
+    request(app)
+      .get('/user/52')
+      .expect(400)
+      .end(done);
+  });
 })
