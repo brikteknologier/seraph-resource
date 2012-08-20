@@ -423,7 +423,29 @@ describe('Seraph Model HTTP Methods', function() {
   it('should not call res.end incorrectly', function(done) {
     request(app)
       .get('/user/name')
-      .expect(400)
+      .expect(404)
       .end(done);
   });
+
+  it('should allow overloading of the GET point.', function(done) {
+    app.get('/user/jellybean', function(req,res) {
+      res.send("Jellybean!", 200);
+    });
+    request(app)
+      .post('/user')
+      .send({ name: 'Jellybean', species: 'Cat' })
+      .end(function(err,res) {
+        request(app)
+          .get('/user/' + res.body.id)
+          .expect(200)
+          .expect({ name: 'Jellybean', species: 'Cat', id: res.body.id })
+          .end(function() {
+            request(app)
+              .get('/user/jellybean')
+              .expect(200)
+              .expect("Jellybean!")
+              .end(done)
+          })
+      });
+  })
 })
