@@ -23,7 +23,7 @@
     "mocha": "*",
     "supertest": "*",
     "express": "*",
-    "seraph_model": "*",
-    "async": "*"
+    "async": "*",
+    "seraph-model": "~0.1.1"
   }
 }
