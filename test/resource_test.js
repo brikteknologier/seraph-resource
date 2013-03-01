@@ -185,7 +185,7 @@ describe('Seraph Model HTTP Methods', function() {
         request(app, err)
           .post('/brews/beer/' + res.body.id + '/hops')
           .type("json")
-          .send('Simcoe, Cascade')         
+          .send('"Simcoe, Cascade"')         
           .expect(201)
           .expect({ 
             name: 'Linneaus IPA', 
