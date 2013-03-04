@@ -75,6 +75,8 @@ actions implemented and routed for the given seraph model.
 * `'delete'` delete a node (required params: `:_id?`)
 * `'rel:read'` read the node's relationships (required params: 
   `:_id`, `:_type`, `:_direction`)
+* `'rel:nodes'` read the node's related nodes (required params:
+  `:_id`, `:_type`, `:_direction`)
 * `'rel:create'` create a relationship (required params: `:_from`, `:_type`,
   `:_to`
 
@@ -96,6 +98,7 @@ POST   /model/                              -> 'create'
 PUT    /model/:_id?                         -> 'update'
 DELETE /model/:_id?                         -> 'delete'
 GET    /model/:_id/rel/:_type/:_direction?  -> 'rel:read'
+GET    /model/:_id/rel/:_type/:_direction?/nodes -> 'rel:nodes'
 POST   /model/:_from/rel/:_type/:_to        -> 'rel:create'
 
 additionally, if fields are defined
