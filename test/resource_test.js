@@ -420,6 +420,56 @@ describe('Seraph Model HTTP Methods', function() {
       });
   })
 
+  it('should retrieve all outgoing relationships nodes', function(done) {
+    request(app)
+      .post('/brews/beer')
+      .send({ name: 'Pliny the Elder' })
+      .end(function(err, res) {
+        if (err) return done(err);
+        request(app)
+          .post('/brews/beer')
+          .send({ name: 'Pliny the Younger' })
+          .end(function(err, res2) {
+            if (err) return done(err);
+            request(app)
+              .post('/brews/beer/' + res.body.id + '/rel/related_to/' + res2.body.id)
+              .end(function(err, res3) {
+                request(app)
+                  .get('/brews/beer/' + res.body.id + '/rel/related_to/out/nodes')
+                  .expect(200)
+                  .expect([{
+                    id: 2, name: 'Pliny the Younger'
+                  }]).end(done);
+              });
+          })
+      });
+  });
+
+  it('should retrieve all incoming relationships nodes', function(done) {
+    request(app)
+      .post('/brews/beer')
+      .send({ name: 'Pliny the Elder' })
+      .end(function(err, res) {
+        if (err) return done(err);
+        request(app)
+          .post('/brews/beer')
+          .send({ name: 'Pliny the Younger' })
+          .end(function(err, res2) {
+            if (err) return done(err);
+            request(app)
+              .post('/brews/beer/' + res2.body.id + '/rel/related_to/' + res.body.id)
+              .end(function(err, res3) {
+                request(app)
+                  .get('/brews/beer/' + res.body.id + '/rel/related_to/in/nodes')
+                  .expect(200)
+                  .expect([{
+                    id: 2, name: 'Pliny the Younger'
+                  }]).end(done);
+              });
+          })
+      });
+  })
+
   it('should not call res.end incorrectly', function(done) {
     request(app)
       .get('/user/name')
