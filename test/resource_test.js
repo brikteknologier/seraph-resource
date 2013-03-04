@@ -6,10 +6,39 @@ var expose = require('../');
 var assert = require('assert');
 var async = require('async');
 
+var nvm = require('neo4j-vm');
+var nsv = require('neo4j-supervisor');
+var seraph = require('seraph');
+
 describe('Seraph Model HTTP Methods', function() {
   var mock, beer, user, app;
+  var neosv;
+  
+  before(function(done) {
+    nvm('1.9.M01', 'community', function(err, neo4j) {
+      neo4j = neosv = nsv(neo4j);
+      async.series([
+        neo4j.stop.bind(neo4j),
+        neo4j.clean.bind(neo4j),
+        neo4j.port.bind(neo4j, 25832), 
+        neo4j.start.bind(neo4j)
+      ], function(err) {
+        if (err) return done(err);
+        neo4j.endpoint(function(err, ep) {
+          console.log(ep)
+          mock = seraph(ep);
+          done();
+        });
+      });
+    });
+  });
+
+  after(function(done) {
+    neosv.stop(done);
+  });
+
+
   beforeEach(function() {
-    mock = new SeraphMock();
     beer = model(mock, 'beer');
     beer.fields = ['name', 'fields', 'ibus', 'hops', 'brewery'];
     user = model(mock, 'user');
@@ -24,7 +53,7 @@ describe('Seraph Model HTTP Methods', function() {
       .send({ name: 'Jellybean', species: 'Cat' })
       .expect('Content-Type', /json/)
       .expect(201)
-      .expect({ name: 'Jellybean', species: 'Cat', id: 0 })
+      .expect({ name: 'Jellybean', species: 'Cat', id: 1 })
       .end(done)
   });
 
@@ -37,7 +66,7 @@ describe('Seraph Model HTTP Methods', function() {
           .get('/user/' + res.body.id)
           .expect(200)
           .expect('Content-Type', /json/)
-          .expect({ name: 'Jellybean', species: 'Cat', id: 0 })
+          .expect({ name: 'Jellybean', species: 'Cat', id: 1 })
           .end(done);
       });
   })
@@ -438,7 +467,7 @@ describe('Seraph Model HTTP Methods', function() {
                   .get('/brews/beer/' + res.body.id + '/rel/related_to/out/nodes')
                   .expect(200)
                   .expect([{
-                    id: 2, name: 'Pliny the Younger'
+                    id: res2.body.id, name: 'Pliny the Younger'
                   }]).end(done);
               });
           })
@@ -463,7 +492,7 @@ describe('Seraph Model HTTP Methods', function() {
                   .get('/brews/beer/' + res.body.id + '/rel/related_to/in/nodes')
                   .expect(200)
                   .expect([{
-                    id: 2, name: 'Pliny the Younger'
+                    id: res2.body.id, name: 'Pliny the Younger'
                   }]).end(done);
               });
           })

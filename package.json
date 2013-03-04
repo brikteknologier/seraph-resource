@@ -7,7 +7,7 @@
     "test": "test"
   },
   "scripts": {
-    "test": "./node_modules/mocha/bin/mocha -R spec"
+    "test": "./node_modules/mocha/bin/mocha -s 500 -t 360000 -R spec"
   },
   "repository": {
     "type": "git",
@@ -17,13 +17,17 @@
   "dependencies": {
     "underscore": "~1.3.3",
     "controller": "~0.4.0",
-    "naan": "~1.3.10"
+    "naan": "~1.3.10",
+    "async": "~0.2.6"
   },
   "devDependencies": {
     "mocha": "*",
     "supertest": "*",
     "express": "*",
     "async": "*",
-    "seraph-model": "~0.1.1"
+    "seraph-model": "~0.1.1",
+    "neo4j-vm": "~0.1.6",
+    "seraph": "~0.4.0",
+    "neo4j-supervisor": "~0.1.1"
   }
 }
