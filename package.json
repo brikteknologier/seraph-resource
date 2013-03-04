@@ -1,6 +1,6 @@
 {
   "name": "seraph-resource",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "expose crud functions for a seraph model over http",
   "main": "lib/resource.js",
   "directories": {
