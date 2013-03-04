@@ -25,7 +25,6 @@ describe('Seraph Model HTTP Methods', function() {
       ], function(err) {
         if (err) return done(err);
         neo4j.endpoint(function(err, ep) {
-          console.log(ep)
           mock = seraph(ep);
           done();
         });
@@ -37,6 +36,15 @@ describe('Seraph Model HTTP Methods', function() {
     neosv.stop(done);
   });
 
+  var assertLike = function(done, obj) {
+    return function(err, res) {
+      if (err) return done(err);
+      Object.keys(obj).forEach(function(key) {
+        assert(obj[key] == res.body[key], obj[key] + ' != ' + res.body[key]);
+      });
+      done(null,res);
+    };
+  };
 
   beforeEach(function() {
     beer = model(mock, 'beer');
@@ -53,8 +61,12 @@ describe('Seraph Model HTTP Methods', function() {
       .send({ name: 'Jellybean', species: 'Cat' })
       .expect('Content-Type', /json/)
       .expect(201)
-      .expect({ name: 'Jellybean', species: 'Cat', id: 1 })
-      .end(done)
+      .end(function(err, res) {
+        if (err) return done(err);
+        assert(res.body.name == 'Jellybean');
+        assert(res.body.species == 'Cat');
+        done();
+      })
   });
 
   it('should retrieve a model', function(done) {
@@ -66,8 +78,12 @@ describe('Seraph Model HTTP Methods', function() {
           .get('/user/' + res.body.id)
           .expect(200)
           .expect('Content-Type', /json/)
-          .expect({ name: 'Jellybean', species: 'Cat', id: 1 })
-          .end(done);
+          .end(function(err, res) {
+            if (err) return done(err);
+            assert(res.body.name == 'Jellybean');
+            assert(res.body.species == 'Cat');
+            done();
+          })
       });
   })
 
@@ -89,8 +105,7 @@ describe('Seraph Model HTTP Methods', function() {
       .send({ name: 'The Harvest', brewery: 'Bridge Road' })
       .expect('Content-Type', /json/)
       .expect(201)
-      .expect({ name: 'The Harvest', brewery: 'Bridge Road', id: 0 })
-      .end(done)
+      .end(assertLike(done, {name:'The Harvest', brewery:'Bridge Road'}))
   });
 
   it('should handle updating', function(done) {
@@ -110,8 +125,7 @@ describe('Seraph Model HTTP Methods', function() {
               .get('/user/' + res.body.id)
               .expect(200)
               .expect('Content-Type', /json/)
-              .expect({ name: 'Jellybean', species: 'Cat', age: 13, id: 0 })
-              .end(done);
+              .end(assertLike(done, { name: 'Jellybean', species: 'Cat', age: 13 }));
           })
       });
   });
@@ -133,8 +147,7 @@ describe('Seraph Model HTTP Methods', function() {
               .get('/user/' + res.body.id)
               .expect(200)
               .expect('Content-Type', /json/)
-              .expect({ name: 'Jellybean', species: 'Cat', age: 13, id: 0 })
-              .end(done);
+              .end(assertLike(done, { name: 'Jellybean', species: 'Cat', age: 13 }));
           })
       });
   });
@@ -150,15 +163,13 @@ describe('Seraph Model HTTP Methods', function() {
           .put('/user/0')
           .send(res.body)
           .expect(200)
-          .expect({ name: 'Jellybean', species: 'Cat', age: 13, id: 0 })
           .end(function(err) {
             assert.ok(!err, err);
             request(app)
               .get('/user/0')
               .expect(200)
               .expect('Content-Type', /json/)
-              .expect({ name: 'Jellybean', species: 'Cat', age: 13, id: 0 })
-              .end(done);
+              .end(assertLike(done, { name: 'Jellybean', species: 'Cat', age: 13 }));
           })
       });
   });
@@ -216,26 +227,18 @@ describe('Seraph Model HTTP Methods', function() {
           .type("json")
           .send('"Simcoe, Cascade"')         
           .expect(201)
-          .expect({ 
-            name: 'Linneaus IPA', 
-            brewery: 'Monadic Ale', 
-            ibus: 65,
-            hops: "Simcoe, Cascade",
-            id: 0
-          })
-          .end(function(err) {
+          .end(function(err, res) {
+            assert(res.body.hops == "Simcoe, Cascade");
             assert(!err,err);
             request(app, err)
               .get('/brews/beer/' + res.body.id)
               .expect(200)
-              .expect({ 
+              .end(assertLike(done, { 
                 name: 'Linneaus IPA', 
                 brewery: 'Monadic Ale', 
                 ibus: 65,
-                hops: "Simcoe, Cascade" ,
-                id: 0
-              })
-              .end(done)
+                hops: "Simcoe, Cascade" 
+              }));
           })
       })
   });
@@ -250,24 +253,17 @@ describe('Seraph Model HTTP Methods', function() {
           .type("json")
           .send(87)         
           .expect(200)
-          .expect({ 
-            name: 'Linneaus IPA', 
-            brewery: 'Monadic Ale', 
-            ibus: 87,
-            id: 0
-          })
-          .end(function(err) {
+          .end(function(err,res) {
+            assert(res.body.ibus == 87);
             assert(!err,err);
             request(app, err)
               .get('/brews/beer/' + res.body.id)
               .expect(200)
-              .expect({ 
+              .end(assertLike(done, { 
                 name: 'Linneaus IPA', 
                 brewery: 'Monadic Ale', 
-                ibus: 87,
-                id: 0
-              })
-              .end(done)
+                ibus: 87
+              }));
           })
       })
   });
@@ -280,22 +276,16 @@ describe('Seraph Model HTTP Methods', function() {
         request(app, err)
           .del('/brews/beer/' + res.body.id + '/ibus') 
           .expect(200)
-          .expect({ 
-            name: 'Linneaus IPA', 
-            brewery: 'Monadic Ale', 
-            id: 0
-          })
-          .end(function(err) {
+          .end(function(err, res) {
+            assert(!res.body.ibus);
             assert(!err,err);
             request(app, err)
               .get('/brews/beer/' + res.body.id)
               .expect(200)
-              .expect({ 
+              .end(assertLike(done, { 
                 name: 'Linneaus IPA', 
-                brewery: 'Monadic Ale',
-                id: 0
-              })
-              .end(done)
+                brewery: 'Monadic Ale'
+              }));
           })
       })
   });
@@ -306,14 +296,17 @@ describe('Seraph Model HTTP Methods', function() {
       .send({ name: 'Pliny the Elder' })
       .end(function(err, res) {
         request(app)
-          .post('/brews/beer/' + res.body.id + '/rel/someType/10')
+          .post('/brews/beer/' + res.body.id + '/rel/someType/2')
           .send({key: 'value'})
           .expect(200)
-          .expect({
-            from: 0, to: 10, id: 0, 
-            type:'someType',
-            properties: { key: 'value' }
-          }).end(done);
+          .end(assertLike(function(err, res) {
+              assert(!err);
+              assert(res.body.properties.key == 'value');
+              done()
+            }, {
+            start: res.body.id, end: 2,  
+            type:'someType'
+          }));
       });
   })
   it('should be able to create a relationship with no props', function(done) {
@@ -322,13 +315,14 @@ describe('Seraph Model HTTP Methods', function() {
       .send({ name: 'Pliny the Elder' })
       .end(function(err, res) {
         request(app)
-          .post('/brews/beer/' + res.body.id + '/rel/someType/10')
+          .post('/brews/beer/' + res.body.id + '/rel/someType/3')
           .expect(200)
-          .expect({
-            from: 0, to: 10, id: 0, 
-            type:'someType',
-            properties: {}
-          }).end(done);
+          .end(function(err, res) {
+            assert(!err);
+            assert(res.body.id);
+            assert(!Object.keys(res.body.properties).length);
+            done();
+          });
       });
   })
 
@@ -338,16 +332,16 @@ describe('Seraph Model HTTP Methods', function() {
       .send({ name: 'Pliny the Elder' })
       .end(function(err, res) {
         request(app)
-          .post('/brews/beer/' + res.body.id + '/rel/someType/10')
-          .end(function(err, res) {
+          .post('/brews/beer/' + res.body.id + '/rel/someType/2')
+          .end(function(err, res2) {
             request(app)
-              .get('/brews/beer/0/rel/someType/out')
+              .get('/brews/beer/'+res.body.id+'/rel/someType/out')
               .expect(200)
-              .expect([{
-                from: 0, to: 10, id: 0, 
-                type:'someType',
-                properties: {}
-              }]).end(done);
+              .end(function(err,res) {
+                assert(!err);
+                assert(res.body.length == 1);
+                done();
+              });
           });
       });
   })
@@ -358,31 +352,24 @@ describe('Seraph Model HTTP Methods', function() {
       .send({ name: 'Pliny the Elder' })
       .end(function(err, res) {
         var r0 = request(app)
-          .post('/brews/beer/' + res.body.id + '/rel/someType/10');
+          .post('/brews/beer/' + res.body.id + '/rel/someType/2');
         var r1 = request(app)
-          .post('/brews/beer/10/rel/someType/0');
+          .post('/brews/beer/2/rel/someType/' + res.body.id);
         var r2 = request(app)
-          .post('/brews/beer/' + res.body.id + '/rel/other/10');
-        var r3 = request(app)
-          .post('/brews/beer/5/rel/someType/6');
+          .post('/brews/beer/' + res.body.id + '/rel/other/2');
         async.series([
           r0.end.bind(r0),
           r1.end.bind(r1),
           r2.end.bind(r2),
-          r3.end.bind(r3)
-        ], function(err, res) {
+        ], function(err, res2) {
           request(app)
-            .get('/brews/beer/0/rel/someType')
+            .get('/brews/beer/'+res.body.id+'/rel/someType')
             .expect(200)
-            .expect([{
-              from: 0, to: 10, id: 0, 
-              type:'someType',
-              properties: {}
-            }, {
-              from: 10, to: 0, id: 1,
-              type: 'someType',
-              properties: {}
-            }]).end(done);
+            .end(function(err,res) {
+              assert(res.body.length == 2);
+              assert(!err);
+              done();
+            });
         })
       });
   })
@@ -393,27 +380,25 @@ describe('Seraph Model HTTP Methods', function() {
       .send({ name: 'Pliny the Elder' })
       .end(function(err, res) {
         var r0 = request(app)
-          .post('/brews/beer/' + res.body.id + '/rel/someType/10');
+          .post('/brews/beer/' + res.body.id + '/rel/someType/3');
         var r1 = request(app)
-          .post('/brews/beer/10/rel/someType/0');
+          .post('/brews/beer/3/rel/someType/' + res.body.id);
         var r2 = request(app)
-          .post('/brews/beer/' + res.body.id + '/rel/other/10');
-        var r3 = request(app)
-          .post('/brews/beer/5/rel/someType/6');
+          .post('/brews/beer/' + res.body.id + '/rel/other/3');
         async.series([
           r0.end.bind(r0),
           r1.end.bind(r1),
-          r2.end.bind(r2),
-          r3.end.bind(r3)
-        ], function(err, res) {
+          r2.end.bind(r2)
+        ], function(err, res2) {
           request(app)
-            .get('/brews/beer/0/rel/someType/in')
+            .get('/brews/beer/'+res.body.id+'/rel/someType/in')
             .expect(200)
-            .expect([{
-              from: 10, to: 0, id: 1,
-              type: 'someType',
-              properties: {}
-            }]).end(done);
+            .end(function(err, res) {
+              assert(!err);
+              assert(res.body.length == 1);
+              assert(res.body[0].start == 3);
+              done()
+            });
         })
       });
   })
@@ -424,27 +409,25 @@ describe('Seraph Model HTTP Methods', function() {
       .send({ name: 'Pliny the Elder' })
       .end(function(err, res) {
         var r0 = request(app)
-          .post('/brews/beer/' + res.body.id + '/rel/someType/10');
+          .post('/brews/beer/' + res.body.id + '/rel/someType/4');
         var r1 = request(app)
-          .post('/brews/beer/10/rel/someType/0');
+          .post('/brews/beer/4/rel/someType/'+res.body.id);
         var r2 = request(app)
-          .post('/brews/beer/' + res.body.id + '/rel/other/10');
-        var r3 = request(app)
-          .post('/brews/beer/5/rel/someType/6');
+          .post('/brews/beer/' + res.body.id + '/rel/other/4');
         async.series([
           r0.end.bind(r0),
           r1.end.bind(r1),
-          r2.end.bind(r2),
-          r3.end.bind(r3)
-        ], function(err, res) {
+          r2.end.bind(r2)
+        ], function(err, res2) {
           request(app)
-            .get('/brews/beer/0/rel/someType/out')
+            .get('/brews/beer/'+res.body.id+'/rel/someType/out')
             .expect(200)
-            .expect([{
-              from: 0, to: 10, id: 0, 
-              type:'someType',
-              properties: {}
-            }]).end(done);
+            .end(function(err, res) {
+              assert(!err);
+              assert(res.body.length == 1);
+              assert(res.body[0].end == 4);
+              done();
+            });
         })
       });
   })
