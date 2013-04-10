@@ -25,9 +25,7 @@
     "supertest": "*",
     "express": "*",
     "async": "*",
-    "seraph-model": "~0.1.1",
-    "neo4j-vm": "~0.1.6",
-    "seraph": "~0.4.0",
-    "neo4j-supervisor": "~0.1.1"
+    "seraph-model": "~0.3.0",
+    "disposable-seraph": "~0.1.8"
   }
 }

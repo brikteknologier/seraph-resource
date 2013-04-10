@@ -1,34 +1,21 @@
 var request = require('supertest');
 var express = require('express');
-var SeraphMock = require('./seraph_mock');
 var model = require('seraph-model');
 var expose = require('../');
 var assert = require('assert');
 var async = require('async');
-
-var nvm = require('neo4j-vm');
-var nsv = require('neo4j-supervisor');
-var seraph = require('seraph');
+var seraph = require('disposable-seraph');
 
 describe('Seraph Model HTTP Methods', function() {
-  var mock, beer, user, app;
+  var db, beer, user, app;
   var neosv;
   
   before(function(done) {
-    nvm('1.9.M01', 'community', function(err, neo4j) {
-      neo4j = neosv = nsv(neo4j);
-      async.series([
-        neo4j.stop.bind(neo4j),
-        neo4j.clean.bind(neo4j),
-        neo4j.port.bind(neo4j, 25832), 
-        neo4j.start.bind(neo4j)
-      ], function(err) {
-        if (err) return done(err);
-        neo4j.endpoint(function(err, ep) {
-          mock = seraph(ep);
-          done();
-        });
-      });
+    seraph(function(err, dbObj, neoObj) {
+      if (err) return done(err);
+      neosv = neoObj;
+      db = dbObj;
+      setTimeout(function() { done() }, 200);
     });
   });
 
@@ -47,9 +34,9 @@ describe('Seraph Model HTTP Methods', function() {
   };
 
   beforeEach(function() {
-    beer = model(mock, 'beer');
+    beer = model(db, 'beer');
     beer.fields = ['name', 'fields', 'ibus', 'hops', 'brewery'];
-    user = model(mock, 'user');
+    user = model(db, 'user');
     app = express();
     app.use('/brews/', expose(beer))
     app.use(expose(user))
@@ -92,7 +79,7 @@ describe('Seraph Model HTTP Methods', function() {
       .post('/user')
       .send({ name: 'Jellybean', species: 'Cat' })
       .end(function() {
-        mock.index.read('nodes', 'type', 'user', function(err, contents) {
+        db.index.read('nodes', 'type', 'user', function(err, contents) {
           assert.ok(contents.length > 0);
           done();
         })
