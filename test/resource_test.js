@@ -37,6 +37,7 @@ describe('Seraph Model HTTP Methods', function() {
     beer = model(db, 'beer');
     beer.fields = ['name', 'fields', 'ibus', 'hops', 'brewery'];
     user = model(db, 'user');
+    user.compose(beer, 'beers', 'likes');
     app = express();
     app.use('/brews/', expose(beer))
     app.use(expose(user))
@@ -145,15 +146,16 @@ describe('Seraph Model HTTP Methods', function() {
       .send({ name: 'Jellybean', species: 'Cat' })
       .end(function(err, res) {
         res.body.age = 13;
+        var id = res.body.id;
         delete res.body.id;
         request(app, err)
-          .put('/user/0')
+          .put('/user/' + id)
           .send(res.body)
           .expect(200)
           .end(function(err) {
             assert.ok(!err, err);
             request(app)
-              .get('/user/0')
+              .get('/user/' + id)
               .expect(200)
               .expect('Content-Type', /json/)
               .end(assertLike(done, { name: 'Jellybean', species: 'Cat', age: 13 }));
@@ -497,4 +499,25 @@ describe('Seraph Model HTTP Methods', function() {
           })
       });
   })
+
+  it('should support composited models', function(done) {
+    request(app)
+      .post('/user')
+      .send({ name: 'Jon', beers: { name: 'Blekfjellet'}})
+      .end(function(err, res) {
+        assert(!err);
+        request(app)
+          .get('/user/' + res.body.id)
+          .end(function(err, res) {
+            assert(res.body.beers.name == 'Blekfjellet');
+            request(app)
+              .get('/user/' + res.body.id + '/beers')
+              .end(function(err, res) {
+                assert(!err);
+                assert(res.body.name == 'Blekfjellet');
+                done();
+              });
+          });
+      });
+  });
 })

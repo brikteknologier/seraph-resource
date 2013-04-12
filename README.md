@@ -107,6 +107,12 @@ GET    /model/:model/field -> 'read:field'
 POST   /model/:model/field -> 'create:field'
 PUT    /model/:model/field -> 'update:field'
 DELETE /model/:model/field -> 'delete:field'
+
+for compositions:
+
+GET   /model/:model/comp -> 'read:comp'
+POST  /model/:model/comp -> 'push:comp'
+
 ```
 
 \*\**note - params are prefixed with an underscore to prevent conflict with
