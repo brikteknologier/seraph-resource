@@ -520,4 +520,37 @@ describe('Seraph Model HTTP Methods', function() {
           });
       });
   });
+
+  it('should have support for pushing to compositions', function(done) {
+    request(app)
+      .post('/user')
+      .send({ name: 'Jon'})
+      .end(function(err, baseres) {
+        assert(!err);
+        request(app)
+          .post('/user/' + baseres.body.id + '/beers')
+          .send({ name: 'Blekfjellet' })
+          .end(function(err, res) {
+            assert(!err);
+            assert(res.body.name == 'Blekfjellet');
+            assert(res.body.id);
+            request(app)
+              .post('/user/' + baseres.body.id + '/beers')
+              .send({ name: 'Amager IPA' })
+              .end(function(err, res) {
+                assert(!err);
+                assert(res.body[0].name == 'Blekfjellet');
+                assert(res.body[1].name == 'Amager IPA');
+                request(app)
+                  .get('/user/' + baseres.body.id + '/beers')
+                  .end(function(err, res) {
+                    assert(!err);
+                    assert(res.body[0].name == 'Blekfjellet');
+                    assert(res.body[1].name == 'Amager IPA');
+                    done();
+                  });
+              });
+          });
+      });
+  });
 })
