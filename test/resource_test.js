@@ -166,6 +166,7 @@ describe('Seraph Model HTTP Methods', function() {
   it('should handle deleting', function(done) {
     request(app)
       .post('/user')
+      .set('Content-Type', 'application/json')
       .send({ name: 'Jellybean', species: 'Cat' })
       .end(function(err, res) {
         request(app, err)
@@ -260,6 +261,7 @@ describe('Seraph Model HTTP Methods', function() {
   it('should be able to delete properties', function(done) {
     request(app)
       .post('/brews/beer')
+      .set('Content-Type', 'application/json')
       .send({ name: 'Linneaus IPA', brewery: 'Monadic Ale', ibus: 65 })
       .end(function(err, res) {
         request(app, err)
@@ -301,6 +303,7 @@ describe('Seraph Model HTTP Methods', function() {
   it('should be able to create a relationship with no props', function(done) {
     request(app)
       .post('/brews/beer')
+      .set('Content-Type', 'application/json')
       .send({ name: 'Pliny the Elder' })
       .end(function(err, res) {
         request(app)
@@ -318,6 +321,7 @@ describe('Seraph Model HTTP Methods', function() {
   it('should retrieve a relationship', function(done) {
     request(app)
       .post('/brews/beer')
+      .set('Content-Type', 'application/json')
       .send({ name: 'Pliny the Elder' })
       .end(function(err, res) {
         request(app)
@@ -338,6 +342,7 @@ describe('Seraph Model HTTP Methods', function() {
   it('should retrieve all relevant relationships', function(done) {
     request(app)
       .post('/brews/beer')
+      .set('Content-Type', 'application/json')
       .send({ name: 'Pliny the Elder' })
       .end(function(err, res) {
         var r0 = request(app)
@@ -366,6 +371,7 @@ describe('Seraph Model HTTP Methods', function() {
   it('should retrieve all relevant incoming relationships', function(done) {
     request(app)
       .post('/brews/beer')
+      .set('Content-Type', 'application/json')
       .send({ name: 'Pliny the Elder' })
       .end(function(err, res) {
         var r0 = request(app)
@@ -395,6 +401,7 @@ describe('Seraph Model HTTP Methods', function() {
   it('should retrieve all relevant outgoing relationships', function(done) {
     request(app)
       .post('/brews/beer')
+      .set('Content-Type', 'application/json')
       .send({ name: 'Pliny the Elder' })
       .end(function(err, res) {
         var r0 = request(app)
@@ -424,6 +431,7 @@ describe('Seraph Model HTTP Methods', function() {
   it('should retrieve all outgoing relationships nodes', function(done) {
     request(app)
       .post('/brews/beer')
+      .set('Content-Type', 'application/json')
       .send({ name: 'Pliny the Elder' })
       .end(function(err, res) {
         if (err) return done(err);
