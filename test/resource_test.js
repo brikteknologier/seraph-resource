@@ -553,4 +553,13 @@ describe('Seraph Model HTTP Methods', function() {
           });
       });
   });
+
+  it('should reject non-json mutation data', function(done) {
+    request(app)
+      .post('/brews/beer')
+      .set('Content-Type', 'application/x-www-form-urlencoded')
+      .send({ name: 'Amazing Horse' })
+      .expect(415)
+      .end(done);
+  });
 })
