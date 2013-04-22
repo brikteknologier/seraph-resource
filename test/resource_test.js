@@ -181,6 +181,13 @@ describe('Seraph Model HTTP Methods', function() {
       });
   });
 
+  it('should give 404 for nonexistent objects', function(done) {
+    request(app)
+      .get('/user/5318008')
+      .expect(404)
+      .end(done);
+  });
+
   it('should be able to access defined properties', function(done) {
     request(app)
       .post('/brews/beer')
