@@ -182,6 +182,40 @@ describe('Seraph Model HTTP Methods', function() {
       });
   });
 
+  it('should handle deleting with relationships', function(done) {
+    request(app)
+      .post('/user')
+      .set('Content-Type', 'application/json')
+      .send({ name: 'Jellybean', species: 'Cat' })
+      .end(function(err, res) {
+        var cat = res.body;
+        request(app, err)
+          .post('/user')
+          .set('Content-Type', 'application/json')
+          .send({ type: 'Magical Hat' })
+          .end(function(err, res) {
+            var hat = res.body;
+            request(app, err)
+              .post('/user/' + cat.id + '/rel/hat/' + hat.id)
+              .set('Content-Type', 'application/json')
+              .send({})
+              .end(function(err, relres) {
+                console.log(relres.body);
+                request(app, err)
+                  .del('/user/' + cat.id)
+                  .expect(200)
+                  .end(function(err) {
+                    assert.ok(!err, err);
+                    request(app)
+                      .get('/user/' + cat.id)
+                      .expect(404)
+                      .end(done);
+                  });
+              })
+          });
+      });
+  });
+
   it('should give 404 for nonexistent objects', function(done) {
     request(app)
       .get('/user/5318008')
