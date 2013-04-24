@@ -200,7 +200,6 @@ describe('Seraph Model HTTP Methods', function() {
               .set('Content-Type', 'application/json')
               .send({})
               .end(function(err, relres) {
-                console.log(relres.body);
                 request(app, err)
                   .del('/user/' + cat.id)
                   .expect(200)
