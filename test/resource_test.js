@@ -610,4 +610,13 @@ describe('Seraph Model HTTP Methods', function() {
       .expect(415)
       .end(done);
   });
+
+  it('should not reject a json request specifying charset', function(done) {
+    request(app)
+      .post('/brews/beer')
+      .set('Content-Type', 'application/json; charset=UTF-8')
+      .send(JSON.stringify({ name: 'Super sweet' }))
+      .expect(201)
+      .end(done);
+  });
 })
