@@ -37,7 +37,7 @@ describe('Seraph Model HTTP Methods', function() {
     beer = model(db, 'beer');
     beer.fields = ['name', 'fields', 'ibus', 'hops', 'brewery'];
     user = model(db, 'user');
-    user.compose(beer, 'beers', 'likes');
+    user.compose(beer, 'beers', 'likes', true);
     app = express();
     app.use('/brews/', expose(beer))
     app.use(expose(user))
@@ -587,14 +587,14 @@ describe('Seraph Model HTTP Methods', function() {
               .send({ name: 'Amager IPA' })
               .end(function(err, res) {
                 assert(!err);
-                assert(res.body[0].name == 'Blekfjellet');
-                assert(res.body[1].name == 'Amager IPA');
+                assert(res.body.name == 'Blekfjellet');
+                assert(res.body.name == 'Amager IPA');
                 request(app)
                   .get('/user/' + baseres.body.id + '/beers')
                   .end(function(err, res) {
                     assert(!err);
                     assert(res.body[0].name == 'Blekfjellet');
-                    assert(res.body[1].name == 'Amager IPA');
+                    assert(res.body[0].name == 'Amager IPA');
                     done();
                   });
               });
