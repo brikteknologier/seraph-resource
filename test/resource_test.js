@@ -557,12 +557,12 @@ describe('Seraph Model HTTP Methods', function() {
         request(app)
           .get('/user/' + res.body.id)
           .end(function(err, res) {
-            assert(res.body.beers.name == 'Blekfjellet');
+            assert(res.body.beers[0].name == 'Blekfjellet');
             request(app)
               .get('/user/' + res.body.id + '/beers')
               .end(function(err, res) {
                 assert(!err);
-                assert(res.body.name == 'Blekfjellet');
+                assert(res.body[0].name == 'Blekfjellet');
                 done();
               });
           });
@@ -587,17 +587,38 @@ describe('Seraph Model HTTP Methods', function() {
               .send({ name: 'Amager IPA' })
               .end(function(err, res) {
                 assert(!err);
-                assert(res.body.name == 'Blekfjellet');
                 assert(res.body.name == 'Amager IPA');
                 request(app)
                   .get('/user/' + baseres.body.id + '/beers')
                   .end(function(err, res) {
                     assert(!err);
                     assert(res.body[0].name == 'Blekfjellet');
-                    assert(res.body[0].name == 'Amager IPA');
+                    assert(res.body[1].name == 'Amager IPA');
                     done();
                   });
               });
+          });
+      });
+  });
+
+  it('should properly save composited models as the correct type', function(done) {
+    request(app)
+      .post('/user')
+      .send({ name: 'Jon'})
+      .end(function(err, baseres) {
+        assert(!err);
+        request(app)
+          .post('/user/' + baseres.body.id + '/beers')
+          .send({ name: 'Blekfjellet' })
+          .end(function(err, res) {
+            assert(!err);
+            assert(res.body.name == 'Blekfjellet');
+            assert(res.body.id);
+            request(app)
+              .get('/brews/beer/' +res.body.id)
+              .expect(200)
+              .expect(res.body)
+              .end(done);
           });
       });
   });
