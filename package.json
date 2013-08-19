@@ -21,14 +21,14 @@
     "async": "~0.2.6"
   },
   "peerDependencies": {
-    "seraph-model": "~0.4.6"
+    "seraph-model": "~0.4.11"
   },
   "devDependencies": {
     "mocha": "*",
     "supertest": "*",
     "express": "*",
     "async": "*",
-    "seraph-model": "~0.4.6",
+    "seraph-model": "~0.4.11",
     "disposable-seraph": "~0.2.5"
   }
 }

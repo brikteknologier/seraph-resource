@@ -37,7 +37,7 @@ describe('Seraph Model HTTP Methods', function() {
     beer = model(db, 'beer');
     beer.fields = ['name', 'fields', 'ibus', 'hops', 'brewery'];
     user = model(db, 'user');
-    user.compose(beer, 'beers', 'likes', true);
+    user.compose(beer, 'beers', 'likes', {many: true});
     app = express();
     app.use('/brews/', expose(beer))
     app.use(expose(user))
@@ -564,6 +564,36 @@ describe('Seraph Model HTTP Methods', function() {
                 assert(!err);
                 assert(res.body[0].name == 'Blekfjellet');
                 done();
+              });
+          });
+      });
+  });
+
+  it('should support updating the root of a composited model', function(done) {
+    request(app)
+      .post('/user')
+      .send({ name: 'Jon', beers: { name: 'Blekfjellet'}})
+      .end(function(err, res) {
+        assert(!err);
+        request(app)
+          .get('/user/' + res.body.id)
+          .end(function(err, res) {
+            assert(res.body.beers[0].name == 'Blekfjellet');
+            res.body.name = 'Other person';
+            res.body.beers[0].name = 'Other beer';
+            request(app).put('/user/root/' + res.body.id)
+              .send(res.body)
+              .end(function(err, res) {
+                assert(!err);
+                assert(res.body.name == 'Other person');
+                request(app)
+                  .get('/user/' + res.body.id)
+                  .end(function(err, res) {
+                    assert(!err)
+                    assert.equal(res.body.name, 'Other person');
+                    assert.equal(res.body.beers[0].name, 'Blekfjellet');
+                    done();
+                  });
               });
           });
       });

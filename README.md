@@ -72,6 +72,8 @@ actions implemented and routed for the given seraph model.
 * `'read'` read a node and send as json (required params: `:<model.type>`)
 * `'create'` create a new node
 * `'update'` update a node (required params: `:_id?`)
+* `'update-root'` update the root of a model (exclude compositions). required
+  params: `:_id?`.
 * `'delete'` delete a node (required params: `:_id?`)
 * `'rel:read'` read the node's relationships (required params: 
   `:_id`, `:_type`, `:_direction`)
@@ -96,6 +98,7 @@ If `model.type` is set `'model'`:
 GET    /model/:model                        -> 'read'
 POST   /model/                              -> 'create'
 PUT    /model/:_id?                         -> 'update'
+PUT    /model/root/:_id?                    -> 'update-root'
 DELETE /model/:_id?                         -> 'delete'
 GET    /model/:_id/rel/:_type/:_direction?  -> 'rel:read'
 GET    /model/:_id/rel/:_type/:_direction?/nodes -> 'rel:nodes'
