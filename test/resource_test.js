@@ -5,6 +5,7 @@ var expose = require('../');
 var assert = require('assert');
 var async = require('async');
 var seraph = require('disposable-seraph');
+var _ = require('underscore');
 
 describe('Seraph Model HTTP Methods', function() {
   var db, beer, user, app;
@@ -592,6 +593,37 @@ describe('Seraph Model HTTP Methods', function() {
                     assert(!err)
                     assert.equal(res.body.name, 'Other person');
                     assert.equal(res.body.beers[0].name, 'Blekfjellet');
+                    done();
+                  });
+              });
+          });
+      });
+  });
+
+  it('should support updating only one composition', function(done) {
+    request(app)
+      .post('/user')
+      .send({ name: 'Jon', beers: { name: 'Blekfjellet'}})
+      .end(function(err, res) {
+        assert(!err);
+        request(app)
+          .get('/user/' + res.body.id)
+          .end(function(err, res) {
+            assert(res.body.beers[0].name == 'Blekfjellet');
+            request(app).put('/user/' + res.body.id + '/beers')
+              .send([{name: 'Hopwired'}, res.body.beers[0]])
+              .end(function(err, newres) {
+                assert(!err);
+                assert(newres.body.length == 2);
+                assert(newres.body[0].id);
+                request(app)
+                  .get('/user/' + res.body.id)
+                  .end(function(err, res) {
+                    assert(!err)
+                    assert(res.body.beers.length == 2);
+                    var beerNames = _.pluck(res.body.beers, 'name')
+                    assert(_.contains(beerNames, 'Hopwired'))
+                    assert(_.contains(beerNames, 'Blekfjellet'))
                     done();
                   });
               });

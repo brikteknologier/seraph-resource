@@ -104,17 +104,18 @@ GET    /model/:_id/rel/:_type/:_direction?  -> 'rel:read'
 GET    /model/:_id/rel/:_type/:_direction?/nodes -> 'rel:nodes'
 POST   /model/:_from/rel/:_type/:_to        -> 'rel:create'
 
-additionally, if fields are defined
+additionally, if fields are defined (replace 'field' with the target field below)
 
 GET    /model/:model/field -> 'read:field'
 POST   /model/:model/field -> 'create:field'
 PUT    /model/:model/field -> 'update:field'
 DELETE /model/:model/field -> 'delete:field'
 
-for compositions:
+for compositions: (replace 'comp' with the target comp name below)
 
-GET   /model/:model/comp -> 'read:comp'
-POST  /model/:model/comp -> 'push:comp'
+GET   /model/:model/comp -> 'read:comp' (model.readComposition)
+POST  /model/:_id/comp -> 'push:comp' (model.push)
+PUT   /model/:_id/comp -> 'update:comp' (model.saveComposition)
 
 ```
 
