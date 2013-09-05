@@ -26,6 +26,6 @@
     "express": "*",
     "async": "*",
     "seraph-model": "~0.4.12",
-    "disposable-seraph": "~0.2.5"
+    "disposable-seraph": "~0.2.7"
   }
 }

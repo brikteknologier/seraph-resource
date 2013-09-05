@@ -257,9 +257,8 @@ describe('Seraph Model HTTP Methods', function() {
           .post('/brews/beer/' + res.body.id + '/hops')
           .type("json")
           .send('"Simcoe, Cascade"')         
-          .expect(201)
-          .end(function(err, res) {
-            assert(res.body.hops == "Simcoe, Cascade");
+          .expect(204)
+          .end(function(err) {
             assert(!err,err);
             request(app, err)
               .get('/brews/beer/' + res.body.id)
@@ -283,9 +282,8 @@ describe('Seraph Model HTTP Methods', function() {
           .put('/brews/beer/' + res.body.id + '/ibus')
           .type("json")
           .send(87)         
-          .expect(200)
-          .end(function(err,res) {
-            assert(res.body.ibus == 87);
+          .expect(204)
+          .end(function(err) {
             assert(!err,err);
             request(app, err)
               .get('/brews/beer/' + res.body.id)
@@ -307,9 +305,8 @@ describe('Seraph Model HTTP Methods', function() {
       .end(function(err, res) {
         request(app, err)
           .del('/brews/beer/' + res.body.id + '/ibus') 
-          .expect(200)
-          .end(function(err, res) {
-            assert(!res.body.ibus);
+          .expect(204)
+          .end(function(err) {
             assert(!err,err);
             request(app, err)
               .get('/brews/beer/' + res.body.id)
