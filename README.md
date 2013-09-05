@@ -106,10 +106,10 @@ POST   /model/:_from/rel/:_type/:_to        -> 'rel:create'
 
 additionally, if fields are defined (replace 'field' with the target field below)
 
-GET    /model/:model/field -> 'read:field'
-POST   /model/:model/field -> 'create:field'
-PUT    /model/:model/field -> 'update:field'
-DELETE /model/:model/field -> 'delete:field'
+GET    /model/:_id/field -> 'read:field'
+POST   /model/:_id/field -> 'create:field'
+PUT    /model/:_id/field -> 'update:field'
+DELETE /model/:_id/field -> 'delete:field'
 
 for compositions: (replace 'comp' with the target comp name below)
 
