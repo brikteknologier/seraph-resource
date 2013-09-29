@@ -67,6 +67,12 @@ __And more!__
 Creates a [controller](http://github.com/brikteknologier/controller) with CRUD 
 actions implemented and routed for the given seraph model. 
 
+**options**
+
+* `strictContentType`: (defaults to true) - only accept `application/json`
+  content types. If set to false, more abstract content types such as formdata
+  will be parsed by [connect-bodyParser](http://www.senchalabs.org/connect/middleware-bodyParser.html) as well.
+
 ### Default actions
 
 * `'read'` read a node and send as json (required params: `:<model.type>`)
