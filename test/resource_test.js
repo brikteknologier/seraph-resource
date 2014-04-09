@@ -12,6 +12,9 @@ describe('Seraph Model HTTP Methods', function() {
   var neosv;
   
   before(function(done) {
+    // allow 10 minutes for initial disposable-seraph startup.
+    this.timeout(600000);
+    this.slow(300000);
     seraph(function(err, dbObj, neoObj) {
       if (err) return done(err);
       neosv = neoObj;
