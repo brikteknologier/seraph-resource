@@ -699,4 +699,16 @@ describe('Seraph Model HTTP Methods', function() {
       .expect(201)
       .end(done);
   });
+
+  describe('access control', function() {
+    it('should restrict read access', function(done) {
+      app.canPerformAction = function(req, id, permission, callback) {
+        callback(null, false);
+      };
+      request(app)
+        .get('/brews/beer/1')
+        .expect(404)
+        .end(done);
+    });
+  });
 })
