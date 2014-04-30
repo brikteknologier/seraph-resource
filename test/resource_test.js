@@ -702,7 +702,7 @@ describe('Seraph Model HTTP Methods', function() {
 
   describe('access control', function() {
     it('should restrict read access', function(done) {
-      app.canPerformAction = function(req, id, permission, callback) {
+      app.canPerformAction = function(req, permission, id, callback) {
         callback(null, false);
       };
       request(app)
@@ -717,7 +717,8 @@ describe('Seraph Model HTTP Methods', function() {
         .expect(201)
         .end(function(err, res) {
           if (err) return done(err);
-          app.canPerformAction = function(req, id, permission, callback) {
+          app.canPerformAction = function(req, permission, id, callback) {
+            if (typeof id == 'function') callback = id;
             callback(null, permission == 'r');
           }
           request(app)
@@ -728,7 +729,7 @@ describe('Seraph Model HTTP Methods', function() {
               request(app)
                 .post('/brews/beer')
                 .send({ name: 'Super sweet' })
-                .expect(401)
+                .expect(400)
                 .end(done)
             })
         });
