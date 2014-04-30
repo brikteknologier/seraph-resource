@@ -710,5 +710,28 @@ describe('Seraph Model HTTP Methods', function() {
         .expect(404)
         .end(done);
     });
+    it('should restrict write access but allow read access', function(done) {
+      request(app)
+        .post('/brews/beer')
+        .send({ name: 'Super sweet' })
+        .expect(201)
+        .end(function(err, res) {
+          if (err) return done(err);
+          app.canPerformAction = function(req, id, permission, callback) {
+            callback(null, permission == 'r');
+          }
+          request(app)
+            .get('/brews/beer/' + res.body.id)
+            .expect(200)
+            .end(function(err, res) {
+              if (err) return done(err);
+              request(app)
+                .post('/brews/beer')
+                .send({ name: 'Super sweet' })
+                .expect(401)
+                .end(done)
+            })
+        });
+    });
   });
 })
