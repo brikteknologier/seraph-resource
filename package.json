@@ -25,7 +25,7 @@
     "supertest": "*",
     "express": "*",
     "async": "*",
-    "seraph-model": "~0.4.12",
-    "disposable-seraph": "~0.2.7"
+    "seraph-model": "~0.6.12",
+    "disposable-seraph": "~0.3.0"
   }
 }

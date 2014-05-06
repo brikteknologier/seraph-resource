@@ -12,7 +12,7 @@ describe('Seraph Model HTTP Methods', function() {
   var neosv;
   
   before(function(done) {
-    seraph(function(err, dbObj, neoObj) {
+    seraph({ version: '2.0.3' }, function(err, dbObj, neoObj) {
       if (err) return done(err);
       neosv = neoObj;
       db = dbObj;
@@ -81,9 +81,10 @@ describe('Seraph Model HTTP Methods', function() {
     request(app)
       .post('/user')
       .send({ name: 'Jellybean', species: 'Cat' })
-      .end(function() {
-        db.index.read('nodes', 'type', 'user', function(err, contents) {
-          assert.ok(contents.length > 0);
+      .end(function(err, res) {
+        user.read(res.body.id, function(err, contents) {
+          assert.ok(!err);
+          assert(contents.name == 'Jellybean');
           done();
         })
       });
