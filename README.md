@@ -134,10 +134,9 @@ Resource groups each of the actions into middleware groups to make it easier
 for you to apply targeted middleware for actions. For more information on how
 the groups work, see the [docs in controller](https://github.com/brikteknologier/controller#groups).
 
-* `'accessors'` actions that will return some data from the database
-* `'mutators'` actions that will change some data in the database
 * `'relationships'` actions that will work with relationships
 * `'properties'` actions that will work with individual properties
+* `'compositions'` actions the work with composited nodes
 
 ## express param
 
