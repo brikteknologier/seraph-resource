@@ -40,7 +40,7 @@ describe('Seraph Model HTTP Methods', function() {
     user = model(db, 'user');
     user.compose(beer, 'beers', 'likes', {many: true});
     app = express();
-    beerResource = expose(beer);
+    beerResource = expose(beer, { relRoutes: true });
     app.use('/brews/', beerResource)
     app.use(expose(user))
   });
@@ -320,6 +320,18 @@ describe('Seraph Model HTTP Methods', function() {
           })
       })
   });
+
+  it('shouldnt try to create relationships if rel routes turned off', function(done) {
+    request(app)
+      .post('/user')
+      .send({ name: 'jon' })
+      .end(function(err, res) {
+        request(app)
+          .post('/user/' + res.body.id + '/rel/someType/2')
+          .expect(404)
+          .end(done);
+      });
+  })
 
   it('should be able to create a relationship', function(done) {
     request(app)
