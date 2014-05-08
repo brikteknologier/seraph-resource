@@ -736,5 +736,22 @@ describe('Seraph Model HTTP Methods', function() {
             })
         });
     });
+    it('delete should be qualified as read access', function(done) {
+      beerResource.checkAccess = function(req, permission, id, callback) {
+        if (typeof id == 'function') return id(null, true);
+        callback(null, false);
+      }
+      request(app)
+        .post('/brews/beer')
+        .send({ name: 'Super sweet' })
+        .expect(201)
+        .end(function(err, res) {
+          if (err) return done(err);
+          request(app)
+            .del('/brews/beer/' + res.body.id)
+            .expect(401)
+            .end(done)
+        });
+    });
   });
 })
