@@ -13,6 +13,10 @@ describe('Seraph Model HTTP Methods', function() {
   
   before(function(done) {
     seraph({ version: '2.0.3' }, function(err, dbObj, neoObj) {
+    // allow 10 minutes for initial disposable-seraph startup.
+    this.timeout(600000);
+    this.slow(300000);
+    seraph(function(err, dbObj, neoObj) {
       if (err) return done(err);
       neosv = neoObj;
       db = dbObj;
