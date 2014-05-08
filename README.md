@@ -69,6 +69,13 @@ actions implemented and routed for the given seraph model.
 
 **options**
 
+* `relRoutes`: (defaults to false) - add routes that expose the ability to
+  create, read and update relationships to and from the model. This is turned off
+  by default because there is no easy way to consistently control access to the
+  nodes being modified, and because it can create some security loopholes. If 
+  this is not a concern for your usecase, you can turn it on. The routes that are
+  added are listed in the 'default actions' section below as 'rel:read', 
+  'rel:nodes', and 'rel:create'.
 * `strictContentType`: (defaults to true) - only accept `application/json`
   content types. If set to false, more abstract content types such as formdata
   will be parsed by [connect-bodyParser](http://www.senchalabs.org/connect/middleware-bodyParser.html) as well.
@@ -81,6 +88,9 @@ actions implemented and routed for the given seraph model.
 * `'update-root'` update the root of a model (exclude compositions). required
   params: `:_id?`.
 * `'delete'` delete a node (required params: `:_id?`)
+
+#### Only available if `relRoutes` option is specified
+
 * `'rel:read'` read the node's relationships (required params: 
   `:_id`, `:_type`, `:_direction`)
 * `'rel:nodes'` read the node's related nodes (required params:
@@ -106,6 +116,9 @@ POST   /model/                              -> 'create'
 PUT    /model/:_id?                         -> 'update'
 PUT    /model/root/:_id?                    -> 'update-root'
 DELETE /model/:_id?                         -> 'delete'
+
+these are only available if the "relRoutes" option is specified
+
 GET    /model/:_id/rel/:_type/:_direction?  -> 'rel:read'
 GET    /model/:_id/rel/:_type/:_direction?/nodes -> 'rel:nodes'
 POST   /model/:_from/rel/:_type/:_to        -> 'rel:create'
@@ -134,7 +147,8 @@ Resource groups each of the actions into middleware groups to make it easier
 for you to apply targeted middleware for actions. For more information on how
 the groups work, see the [docs in controller](https://github.com/brikteknologier/controller#groups).
 
-* `'relationships'` actions that will work with relationships
+* `'relationships'` actions that will work with relationships (note that there
+  will be nothing in this group unless relationship routes are turned on)
 * `'properties'` actions that will work with individual properties
 * `'compositions'` actions the work with composited nodes
 
