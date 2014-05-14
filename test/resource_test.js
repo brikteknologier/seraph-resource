@@ -12,11 +12,10 @@ describe('Seraph Model HTTP Methods', function() {
   var neosv;
   
   before(function(done) {
-    seraph({ version: '2.0.3' }, function(err, dbObj, neoObj) {
     // allow 10 minutes for initial disposable-seraph startup.
     this.timeout(600000);
     this.slow(300000);
-    seraph(function(err, dbObj, neoObj) {
+    seraph({ version: '2.0.3' }, function(err, dbObj, neoObj) {
       if (err) return done(err);
       neosv = neoObj;
       db = dbObj;
@@ -769,5 +768,65 @@ describe('Seraph Model HTTP Methods', function() {
             .end(done)
         });
     });
+
+    it('should restrict access to defined properties', function(done) {
+      request(app)
+        .post('/brews/beer')
+        .send({ name: 'Linneaus IPA', brewery: 'Monadic Ale', ibus: 65 })
+        .end(function(err, res) {
+          beerResource.checkAccess = function(req, permission, id, callback) {
+            callback(null, false);
+          };
+          request(app, err)
+            .get('/brews/beer/' + res.body.id + '/brewery')
+            .expect(401)
+            .end(done)
+        })
+    });
+
+    it('should restrict access to creating properties', function(done) {
+      request(app)
+        .post('/brews/beer')
+        .send({ name: 'Linneaus IPA', brewery: 'Monadic Ale', ibus: 65 })
+        .end(function(err, res) {
+          beerResource.checkAccess = function(req, permission, id, callback) {
+            callback(null, false);
+          };
+          request(app, err)
+            .post('/brews/beer/' + res.body.id + '/hops')
+            .type("json")
+            .send('"Simcoe, Cascade"')         
+            .expect(401)
+            .end(done)
+        })
+    });
+
+    it('should restrict access to deleting properties', function(done) {
+      request(app)
+        .post('/brews/beer')
+        .set('Content-Type', 'application/json')
+        .send({ name: 'Linneaus IPA', brewery: 'Monadic Ale', ibus: 65 })
+        .end(function(err, res) {
+          beerResource.checkAccess = function(req, permission, id, callback) {
+            callback(null, false);
+          };
+          request(app, err)
+            .del('/brews/beer/' + res.body.id + '/ibus') 
+            .expect(401)
+            .end(function(err) {
+              assert(!err, err);
+              request(app, err)
+                .get('/brews/beer/' + res.body.id)
+                .expect(200)
+                .end(assertLike(done, { 
+                  name: 'Linneaus IPA', 
+                  brewery: 'Monadic Ale',
+                  ibus: 60
+                }));
+            })
+        })
+    });
+
   });
 })
+
