@@ -779,7 +779,7 @@ describe('Seraph Model HTTP Methods', function() {
           };
           request(app, err)
             .get('/brews/beer/' + res.body.id + '/brewery')
-            .expect(401)
+            .expect(404)
             .end(done)
         })
     });
@@ -808,7 +808,7 @@ describe('Seraph Model HTTP Methods', function() {
         .send({ name: 'Linneaus IPA', brewery: 'Monadic Ale', ibus: 65 })
         .end(function(err, res) {
           beerResource.checkAccess = function(req, permission, id, callback) {
-            callback(null, false);
+            callback(null, permission == 'r');
           };
           request(app, err)
             .del('/brews/beer/' + res.body.id + '/ibus') 
@@ -821,7 +821,7 @@ describe('Seraph Model HTTP Methods', function() {
                 .end(assertLike(done, { 
                   name: 'Linneaus IPA', 
                   brewery: 'Monadic Ale',
-                  ibus: 60
+                  ibus: 65
                 }));
             })
         })
