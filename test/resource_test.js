@@ -753,7 +753,7 @@ describe('Seraph Model HTTP Methods', function() {
     });
     it('delete should be qualified as read access', function(done) {
       beerResource.checkAccess = function(req, permission, id, callback) {
-        if (typeof id == 'function') return id(null, true);
+        if (id == null) return callback(null, true);
         callback(null, false);
       }
       request(app)
