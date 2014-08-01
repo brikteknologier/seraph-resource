@@ -724,7 +724,7 @@ describe('Seraph Model HTTP Methods', function() {
       };
       request(app)
         .get('/brews/beer/1')
-        .expect(404)
+        .expect(401)
         .end(done);
     });
     it('should restrict write access but allow read access', function(done) {
@@ -779,7 +779,7 @@ describe('Seraph Model HTTP Methods', function() {
           };
           request(app, err)
             .get('/brews/beer/' + res.body.id + '/brewery')
-            .expect(404)
+            .expect(401)
             .end(done)
         })
     });
