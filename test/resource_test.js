@@ -15,11 +15,20 @@ describe('Seraph Model HTTP Methods', function() {
     // allow 10 minutes for initial disposable-seraph startup.
     this.timeout(600000);
     this.slow(300000);
-    seraph({ version: '2.1.5' }, function(err, dbObj, neoObj) {
+    seraph({ version: "3.3.0" }, function(err, _db, _neo) {
       if (err) return done(err);
-      neosv = neoObj;
-      db = dbObj;
-      setTimeout(function() { done() }, 200);
+      db = _db;
+      neosv = _neo;
+      db.options.pass = 'neo4j';
+      db.changePassword('password', function(err) {
+        if (err) {
+          db.options.pass = 'password';
+          delete db.options.authString;
+          if (process.env.BOLT)
+            db = require('seraph')({user:'neo4j', pass:'password', nodeify:true, bolt: true});
+          done()
+        } else done()
+      });
     });
   });
 
@@ -829,4 +838,3 @@ describe('Seraph Model HTTP Methods', function() {
 
   });
 })
-
