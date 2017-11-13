@@ -677,8 +677,9 @@ describe('Seraph Model HTTP Methods', function() {
                   .get('/user/' + baseres.body.id + '/beers')
                   .end(function(err, res) {
                     assert(!err);
-                    assert(res.body[0].name == 'Blekfjellet');
-                    assert(res.body[1].name == 'Amager IPA');
+                    console.log(res.body);
+                    assert(res.body.find(beer => beer.name == 'Blekfjellet'));
+                    assert(res.body.find(beer => beer.name == 'Amager IPA'));
                     done();
                   });
               });
