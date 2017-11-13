@@ -552,7 +552,7 @@ describe('Seraph Model HTTP Methods', function() {
 
   it('should allow overloading of the GET point.', function(done) {
     app.get('/user/jellybean', function(req,res) {
-      res.send("Jellybean!", 200);
+      res.status(200).send("Jellybean!");
     });
     request(app)
       .post('/user')
