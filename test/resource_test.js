@@ -677,7 +677,6 @@ describe('Seraph Model HTTP Methods', function() {
                   .get('/user/' + baseres.body.id + '/beers')
                   .end(function(err, res) {
                     assert(!err);
-                    console.log(res.body);
                     assert(res.body.find(beer => beer.name == 'Blekfjellet'));
                     assert(res.body.find(beer => beer.name == 'Amager IPA'));
                     done();
@@ -703,8 +702,12 @@ describe('Seraph Model HTTP Methods', function() {
             request(app)
               .get('/brews/beer/' +res.body.id)
               .expect(200)
-              .expect(res.body)
-              .end(done);
+              .end(function(err, res2) {
+                assert(!err);
+                assert.equal(res2.body.name, res.body.name);
+                assert.equal(res2.body.id, res.body.id);
+                done();
+              });
           });
       });
   });
